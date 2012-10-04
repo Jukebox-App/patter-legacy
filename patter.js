@@ -1,6 +1,6 @@
 // Times in minutes;
-var idleTimeout = 10;
-var redTimeout = 5;
+var goneTimeout = 5;
+var idleTimeout = 5;
 var keepaliveTimeout = 4;
 
 var globalFeedTimer;
@@ -13,7 +13,8 @@ var currentUser;
 var accessToken;
 var chatRoom;
 var rooomName = "Chat Room";
-var users = {};
+var userLiveTimes = {};
+var userPostTimes = {};
 var minId = 0;
 var lastUserList = "";
 
@@ -143,16 +144,17 @@ function updateGlobalFeed() {
 	    }
 	}
 	scrollDown(added);
-	updateUsers();
-	globalFeedTimer = setTimeout("updateGlobalFeed()", 2000);
+	$(".easydate").easydate();
     });
+    updateUsers();
+    globalFeedTimer = setTimeout("updateGlobalFeed()", 2000);
 }
 
 function updatePost(data) {
     var added = false;
     if (!document.getElementById("post|" + data.id)) {
+	var created = new Date(data.created_at).getTime();
 	minId = data.id;
-	users[data.user.username] = new Date(data.created_at).getTime();
 	var annotations = data.annotations;
 	var htmlText = null;
 	if (annotations != null) {
@@ -161,14 +163,16 @@ function updatePost(data) {
 		if (annotations[j].type == "snark.chat") {
 		    var text = annotations[j].value.message;
 		    htmlText = htmlEncode(text);
-		    break;
+		    userPostTimes[data.user.username] = created;
 		} else if (annotations[j].type == "snark.room") {
 		    var text = annotations[j].value.name;
 		    htmlText = "<em>Room <strong>"
 			+ htmlEncode(text)
 			+ "</strong> created</em>";
+		    userLiveTimes[data.user.username] = created;
 		} else if (annotations[j].type == "snark.keepalive") {
 //		    console.log("Found Keepalive From " + data.user.username);
+		    userLiveTimes[data.user.username] = created;
 		}
 	    }
 	}
@@ -176,13 +180,15 @@ function updatePost(data) {
 	    var body = htmlText.replace(urlRegex,
 					"<a href='$1' target='_blank'>$1</a>");
 	    var formattedPost =
-		"<div><span class='appNetPostUsername'><strong>@" + 
+		"<div class='row-fluid'><div class='span10'>" +
+		"<span class='appNetPostUsername'><strong>@" + 
 		data.user.username + "</strong></span> " + body
-		+ "</div>";
+		+ "</div><div class='span2'><span class='easydate'>" +
+		htmlEncode(data.created_at) + "</span></div></div>";
 	    $('<div></div>', {
 		id: 'post|' + data.id,
 		html: formattedPost
-	    }).appendTo($("#global-tab-container")).show("slow");
+	    }).appendTo($("#global-tab-container"));
 	    added = true;
 	}
     }
@@ -191,15 +197,24 @@ function updatePost(data) {
 
 function updateUsers() {
     var userList = '<ul class="unstyled">';
+    var goneTime = new Date().getTime() - 1000*60*goneTimeout;
     var idleTime = new Date().getTime() - 1000*60*idleTimeout;
-    var keys = Object.keys(users);
+    var keys = Object.keys(userLiveTimes);
     keys.sort();
     var i = 0;
     for (; i < keys.length; ++i) {
-	var updateTime = users[keys[i]];
-	if (updateTime >= idleTime || keys[i] == currentUser.username) {
+	var liveTime = userLiveTimes[keys[i]];
+	var postTime = userPostTimes[keys[i]]
+	if (liveTime >= goneTime
+	    || (postTime != null && postTime >= goneTime)
+	    || keys[i] == currentUser.username)
+	{
 	    var user = htmlEncode(keys[i]);
-	    userList += "<li><div><span class='appNetPostUsername'><strong>@"
+	    var userClass = "idleUser";
+	    if (postTime != null && postTime >= idleTime) {
+		userClass = "activeUser";
+	    }
+	    userList += "<li><span class='" + userClass + "'><strong>@"
 		+ user + "</strong></span></li>";
 	}
     }
@@ -220,6 +235,7 @@ function postMessage(messageString) {
     endpoint += "?include_annotations=1";
     jsonPost(endpoint, post, function(data) {
 	scrollDown(updatePost(data));
+	$(".easydate").easydate();
     });
 
     $("#main_post").val("");

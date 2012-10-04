@@ -3,14 +3,16 @@
 <head>
         <meta charset="utf-8">
         <title>Patter - A chat client for app.net</title>
-    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/bootstrap.min.css">
-    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/bootstrap-responsive.min.css">
-    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/appdotnet.css">
-    <script src="http://www.quickapplabs.com/js/jquery.js"></script>
-    <script src="http://www.quickapplabs.com/js/jquery.cookie.js"></script>
-    <script src="http://www.quickapplabs.com/js/jquery.easydate.js"></script>
-    <script src="http://www.quickapplabs.com/js/jquery.simplemodal.js"></script>
-    <script src="http://www.quickapplabs.com/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" style="text/css"
+          href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" style="text/css"
+          href="bootstrap/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" style="text/css"
+          href="patter.css">
+    <script src="jquery-1.8.2.min.js"></script>
+    <script src="jquery.cookie.js"></script>
+    <script src="jquery.easydate-0.2.4.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="patter.js"></script>
     <script>
       $(document).ready(initialize);
@@ -51,8 +53,6 @@
              style="max-height: 600px; overflow: scroll;">
         </div>
         <div class="span2">
-          <h3>Users</h3>
-          <br clear="both">
           <div id="user-list">
             <p>User List</p>
           </div>
@@ -62,9 +62,9 @@
       <div class="row-fluid">
         <form id="form_post">
           <div class="span11">
-            <input type="text" id="main_post">
+            <input type="text" id="main_post" class="chatbox">
           </div>
-          <div class="span1 offset11">
+          <div class="span1">
             <input type="submit" value="Send" />
           </div>
         </form>
