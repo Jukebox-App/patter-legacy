@@ -1,7 +1,7 @@
 // Times in minutes;
-var goneTimeout = 5;
+var goneTimeout = 10;
 var idleTimeout = 5;
-var keepaliveTimeout = 4;
+var keepaliveTimeout = 9;
 
 var globalFeedTimer;
 var keepaliveTimer;
@@ -342,7 +342,7 @@ function refreshPage() {
 
 function makeUserColor(user) {
     var hash = getHash(user);
-    var color = (hash & 0x000f0f0f).toString(16);
+    var color = (hash & 0x007f7f7f).toString(16);
     return "style='color: #" + color + "'";
 }
 
