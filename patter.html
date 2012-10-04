@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8">
+        <title>Patter - A chat client for app.net</title>
+    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/bootstrap.min.css">
+    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" style="text/css" href="http://www.quickapplabs.com/css/appdotnet.css">
+    <script src="http://www.quickapplabs.com/js/jquery.js"></script>
+    <script src="http://www.quickapplabs.com/js/jquery.cookie.js"></script>
+    <script src="http://www.quickapplabs.com/js/jquery.easydate.js"></script>
+    <script src="http://www.quickapplabs.com/js/jquery.simplemodal.js"></script>
+    <script src="http://www.quickapplabs.com/js/bootstrap.min.js"></script>
+    <script src="patter.js"></script>
+    <script>
+      $(document).ready(initialize);
+    </script>
+</head>
+<body>
+<!--
+  <div id="open-tag-modal" class="modal">
+    <h1>Open tab for tag #</h1>
+    <input type="text" id="add-tab-tag">
+    <a class="btn btn-primary" id="add-tab-button">Go!</a>
+  </div>
+-->
+  <div class="container">
+    <div id="main" class="hero-unit">
+      <h1>Welcome to Patter</h1>
+      <hr>
+      <p>This is a client for creating and participating in open chat
+        rooms over <a href=http://app.net target="_blank">app.net</a>.
+      <p><a id="authorize-button" class="btn btn-primary btn-large" href="https://alpha.app.net/oauth/authenticate?client_id=eyvKG7AakjJTGk9cLJj7MsXX2GWPEwLQ&response_type=token&redirect_uri=http://www.jonathonduerig.com/patter.html&scope=stream%20write_post">Authorize Patter</a> to begin.</p>
+      <p>For troubleshooting, contact @duerig. Based (loosely) on code from @q.</p>
+    </div>
+    <div id="main-logged" class="hero-unit">
+      <div class="row-fluid">
+        <div class="span4">
+          <h3 id="room-name">Chat Room</h3>
+        </div>
+        <div class="span6">
+          <h4>(Public Room)</h4>
+        </div>
+        <div class="span2">
+          <p><a class="btn btn-primary btn-large" href="http://www.jonathonduerig.com/patter.html">Leave Room</a></p>
+        </div>
+      </div>
+      <br clear="both">
+      <div class="row-fluid">
+        <div id="global-tab-container" class="span10"
+             style="max-height: 600px; overflow: scroll;">
+        </div>
+        <div class="span2">
+          <h3>Users</h3>
+          <br clear="both">
+          <div id="user-list">
+            <p>User List</p>
+          </div>
+        </div>
+      </div>
+      <br clear="both">
+      <div class="row-fluid">
+        <form id="form_post">
+          <div class="span11">
+            <input type="text" id="main_post">
+          </div>
+          <div class="span1 offset11">
+            <input type="submit" value="Send" />
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="main-join" class="hero-unit" style="height: 100%;">
+      <h1>Welcome to Patter</h1>
+      <hr>
+      <p>Type a name for your chat room and click the create
+       button. Then app.net member can join by visiting your unique
+       URL.</p>
+      <p>Remember, Patter makes <strong>public</strong> chat
+       rooms. Any app.net member can join using the URL. While your
+       posts won't appear in your main timeline, anyone who cares to
+       can find out what you write here.</p>
+      <div>
+        <textarea id="create_name"></textarea><br clear="both">
+        <button id="create_button">Create Chat Room</button>
+      </div>
+      <p>For troubleshooting, contact @duerig. Based (loosely) on code from @q.</p>
+    </div>
+  </div>
+</body>
+</html>
