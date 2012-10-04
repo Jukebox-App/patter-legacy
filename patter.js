@@ -181,7 +181,8 @@ function updatePost(data) {
 					"<a href='$1' target='_blank'>$1</a>");
 	    var formattedPost =
 		"<div class='row-fluid'><div class='span10'>" +
-		"<span class='appNetPostUsername'><strong>@" + 
+		"<span class='appNetPostUsername' "
+		+ makeUserColor(data.user.username) + "><strong>@" + 
 		data.user.username + "</strong></span> " + body
 		+ "</div><div class='span2'><span class='easydate'>" +
 		htmlEncode(data.created_at) + "</span></div></div>";
@@ -214,7 +215,8 @@ function updateUsers() {
 	    if (postTime != null && postTime >= idleTime) {
 		userClass = "activeUser";
 	    }
-	    userList += "<li><span class='" + userClass + "'><strong>@"
+	    userList += "<li><span class='" + userClass + "' "
+		+ makeUserColor(user) + "><strong>@"
 		+ user + "</strong></span></li>";
 	}
     }
@@ -337,5 +339,23 @@ function refreshPage() {
     window.location = redirect;
     window.location.reload(true);
 }
+
+function makeUserColor(user) {
+    var hash = getHash(user);
+    var color = (hash & 0x000f0f0f).toString(16);
+    return "style='color: #" + color + "'";
+}
+
+function getHash(str) {
+    var hash = 0;
+    if (str.length == 0) return hash;
+    var i = 0;
+    for (; i < str.length; i++) {
+        var char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};
 
 var urlRegex = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/i;

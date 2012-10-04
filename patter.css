@@ -19,7 +19,7 @@ body {
 .idleUser {
     display: inline-block;
     padding: 4px;
-    background-color: #ffbbbb;
+    background-color: #ffdddd;
 }
 
 .activeUser {
