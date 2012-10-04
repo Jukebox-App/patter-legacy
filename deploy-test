@@ -1,0 +1,3 @@
+#!/bin/sh
+
+scp patter.html patter.js duerig@jonathonduerig.com:/var/www/test
