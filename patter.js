@@ -186,16 +186,25 @@ function updatePost(data, goBack) {
 		if (annotations[j].type == "snark.chat") {
 		    var text = annotations[j].value.message;
 		    htmlText = htmlEncode(text);
-		    userPostTimes[data.user.username] = created;
+		    if (userPostTimes[data.user.username] == null
+			|| userPostTimes[data.user.username] < created) {
+			userPostTimes[data.user.username] = created;
+		    }
 		} else if (annotations[j].type == "snark.room") {
 		    var text = annotations[j].value.name;
 		    htmlText = "<em>Room <strong>"
 			+ htmlEncode(text)
 			+ "</strong> created</em>";
-		    userLiveTimes[data.user.username] = created;
+		    if (userLiveTimes[data.user.username] == null
+			|| userLiveTimes[data.user.username] < created) {
+			userLiveTimes[data.user.username] = created;
+		    }
 		} else if (annotations[j].type == "snark.keepalive") {
 //		    console.log("Found Keepalive From " + data.user.username);
-		    userLiveTimes[data.user.username] = created;
+		    if (userLiveTimes[data.user.username] == null
+			|| userLiveTimes[data.user.username] < created) {
+			userLiveTimes[data.user.username] = created;
+		    }
 		}
 	    }
 	}
