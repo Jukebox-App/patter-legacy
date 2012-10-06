@@ -332,7 +332,7 @@ function setHeader(xhr) {
 }
 
 function refreshPage() {
-    var redirect = "http://www.jonathonduerig.com/patter.html";
+    var redirect = "http://patter-app.net/chat";
     if (chatRoom != null) {
 	redirect += "#room=" + chatRoom;
     }
