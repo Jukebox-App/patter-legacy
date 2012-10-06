@@ -123,6 +123,8 @@ function initName() {
 function updateGlobalFeed() {
     clearTimeout(globalFeedTimer);
 
+    var lastBottom = getBottomScroll();
+
     endpoint = "https://alpha-api.app.net/stream/0/posts/" + chatRoom
 	+ "/replies";
 
@@ -143,7 +145,7 @@ function updateGlobalFeed() {
 		added = updatePost(data[i]) || added;
 	    }
 	}
-	scrollDown(added);
+	scrollDown(added, lastBottom);
 	$(".easydate").easydate();
     });
     updateUsers();
@@ -206,7 +208,7 @@ function updateUsers() {
     for (; i < keys.length; ++i) {
 	var liveTime = userLiveTimes[keys[i]];
 	var postTime = userPostTimes[keys[i]]
-	if (liveTime >= goneTime
+	if ((liveTime != null && liveTime >= goneTime)
 	    || (postTime != null && postTime >= goneTime)
 	    || keys[i] == currentUser.username)
 	{
@@ -228,6 +230,7 @@ function updateUsers() {
 }
 
 function postMessage(messageString) {
+    var lastBottom = getBottomScroll();
     var post = {
 	machine_only: true,
 	reply_to: chatRoom,
@@ -236,18 +239,30 @@ function postMessage(messageString) {
     var endpoint = "https://alpha-api.app.net/stream/0/posts";
     endpoint += "?include_annotations=1";
     jsonPost(endpoint, post, function(data) {
-	scrollDown(updatePost(data));
+	scrollDown(updatePost(data), lastBottom);
 	$(".easydate").easydate();
     });
 
     $("#main_post").val("");
 }
 
-function scrollDown(shouldScroll) {
+function scrollDown(shouldScroll, lastBottom) {
     if (shouldScroll) {
-	var objDiv = document.getElementById("global-tab-container");
-	objDiv.scrollTop = objDiv.scrollHeight;
+	var chatArea = document.getElementById("global-tab-container");
+	if (chatArea.scrollTop == lastBottom) {
+	    chatArea.scrollTop = getBottomScroll();
+	}
+	$.titleAlert("New Message", { duration: 10000,
+				      interval: 1000,
+				      requireBlur: true});
     }
+}
+
+function getBottomScroll() {
+    var chatArea = document.getElementById("global-tab-container");
+    var scroll = chatArea.scrollHeight;
+    var client = chatArea.clientHeight;
+    return Math.max(scroll, client) - client;
 }
 
 function createRoom(name) {
@@ -263,16 +278,15 @@ function createRoom(name) {
 }
 
 function keepalive() {
-    clearTimeout(keepaliveTimer);
+//    clearTimeout(keepaliveTimer);
     var post = {
 	machine_only: true,
 	reply_to: chatRoom,
 	annotations: [{type: "snark.keepalive", value: {ping: 1}}]
     };
     var endpoint = "https://alpha-api.app.net/stream/0/posts";
-    jsonPost(endpoint, post, function(data) {
-    });
-    keepaliveTimer = setTimeout("keepalive()", 1000 * 60 * keepaliveTimeout);
+    jsonPost(endpoint, post, function(data) {});
+//    keepaliveTimer = setTimeout("keepalive()", 1000 * 60 * keepaliveTimeout);
 }
 
 function jsonPost(endpoint, data, success) {
