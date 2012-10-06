@@ -13,7 +13,6 @@ var currentUser;
 var accessToken;
 var chatRoom;
 var rooomName = "Chat Room";
-var userLiveTimes = {};
 var userPostTimes = {};
 var earliestId = 2000000000;
 var latestId = 0;
@@ -159,67 +158,90 @@ function updateGlobalFeed() {
     }
 
     $.get(endpoint, params, function(data) {
-	var allPosts = "";
+	var allPosts = jQuery('<div/>');
 	for (var i = data.length - 1; i > -1; i--) {
-	    var newPost = updatePost(data[i], goBack);
+	    var newPost = calculatePost(data[i]);
 	    if (newPost != null) {
-		allPosts += newPost;
+		allPosts.append(newPost);
 	    }
 	}
-	addPosts(allPosts, goBack);
+	addPostsToFeed(allPosts.contents(), goBack);
     });
     updateUsers();
     globalFeedTimer = setTimeout("updateGlobalFeed()", 2000);
 }
 
-function updatePost(data, goBack) {
+function calculatePost(data) {
     var result = null;
-    if (!document.getElementById("post|" + data.id)) {
-	var created = new Date(data.created_at).getTime();
-	latestId = Math.max(data.id, latestId);
-	earliestId = Math.min(data.id, earliestId);
-	var annotations = data.annotations;
-	var htmlText = null;
-	if (annotations != null) {
-	    var j = 0;
-	    for (; j < annotations.length; ++j) {
-		if (annotations[j].type == "snark.chat") {
-		    var text = annotations[j].value.message;
-		    htmlText = htmlEncode(text);
-		    if (userPostTimes[data.user.username] == null
-			|| userPostTimes[data.user.username] < created) {
-			userPostTimes[data.user.username] = created;
-		    }
-		} else if (annotations[j].type == "snark.room") {
-		    var text = annotations[j].value.name;
-		    htmlText = "<em>Room <strong>"
-			+ htmlEncode(text)
-			+ "</strong> created</em>";
-		    if (userLiveTimes[data.user.username] == null
-			|| userLiveTimes[data.user.username] < created) {
-			userLiveTimes[data.user.username] = created;
-		    }
-		} else if (annotations[j].type == "snark.keepalive") {
-//		    console.log("Found Keepalive From " + data.user.username);
-		    if (userLiveTimes[data.user.username] == null
-			|| userLiveTimes[data.user.username] < created) {
-			userLiveTimes[data.user.username] = created;
-		    }
-		}
+    storePostInfo(data);
+    var body = calculateBody(data);
+    if (body != null) {
+	var row = jQuery('<div/>');
+	row.addClass('row-fluid');
+	row.attr('id', 'post|' + data.id);
+	
+	var post = jQuery('<div/>');
+	post.addClass('span10');
+
+	var author = jQuery('<a/>');
+	author.addClass('author');
+	author.attr('href', window.location);
+	author.attr('id', '@' + data.user.username);
+	author.attr('style', makeUserColor(data.user.username));
+	author.html('<strong id="@' + data.user.username + '">@' + data.user.username + '</strong> ');
+	post.append(author);
+	post.append(body);
+	row.append(post);
+
+	var timestamp = jQuery('<div/>');
+	timestamp.addClass('span2');
+	timestamp.addClass('easydate');
+	timestamp.text(data.created_at);
+	row.append(timestamp);
+	result = row;
+    }
+    return result;
+}
+
+function storePostInfo(data)
+{
+    latestId = Math.max(data.id, latestId);
+    earliestId = Math.min(data.id, earliestId);
+    var created = new Date(data.created_at).getTime();
+    if (userPostTimes[data.user.username] == null
+	|| userPostTimes[data.user.username] < created) {
+	userPostTimes[data.user.username] = created;
+    }
+}
+
+function calculateBody(data)
+{
+    var result = null;
+    var annotations = data.annotations;
+    if (!document.getElementById("post|" + data.id) && annotations != null) {
+	var i = 0;
+	for (; i < annotations.length; ++i) {
+	    if (annotations[i].type == "snark.chat") {
+		var text = annotations[i].value.message;
+		result = htmlEncode(text);
+	    } else if (annotations[i].type == "snark.room") {
+		var text = annotations[i].value.name;
+		result = "<em>Room <strong>"
+		    + htmlEncode(text)
+		    + "</strong> created</em>";
 	    }
 	}
-	if (htmlText != null) {
-	    var body = htmlText.replace(urlRegex,
-					"<a href='$1' target='_blank'>$1</a>");
-	    result =
-		"<div class='row-fluid' id='post|" + data.id +
-		"'><div class='span10'>" +
-		"<span class='appNetPostUsername' "
-		+ makeUserColor(data.user.username) + "><strong>@" + 
-		data.user.username + "</strong></span> " + body
-		+ "</div><div class='span2'><span class='easydate'>" +
-		htmlEncode(data.created_at) + "</span></div></div>";
-	}
+    }
+    if (result != null)
+    {
+	result =
+	    result.replace(urlRegex,
+			   "<a href='$1' target='_blank'>$1</a>");
+	result =
+	    result.replace(mentionRegex,
+			   "<a href='" + window.location +
+			   "' id='$1' class='mention' " +
+			   ">$1</a>");
     }
     return result;
 }
@@ -228,14 +250,12 @@ function updateUsers() {
     var userList = '<ul class="unstyled">';
     var goneTime = new Date().getTime() - 1000*60*goneTimeout;
     var idleTime = new Date().getTime() - 1000*60*idleTimeout;
-    var keys = Object.keys(userLiveTimes);
+    var keys = Object.keys(userPostTimes);
     keys.sort();
     var i = 0;
     for (; i < keys.length; ++i) {
-	var liveTime = userLiveTimes[keys[i]];
 	var postTime = userPostTimes[keys[i]]
-	if ((liveTime != null && liveTime >= goneTime)
-	    || (postTime != null && postTime >= goneTime)
+	if ((postTime != null && postTime >= goneTime)
 	    || keys[i] == currentUser.username)
 	{
 	    var user = htmlEncode(keys[i]);
@@ -243,14 +263,17 @@ function updateUsers() {
 	    if (postTime != null && postTime >= idleTime) {
 		userClass = "activeUser";
 	    }
-	    userList += "<li><span class='" + userClass + "' "
-		+ makeUserColor(user) + "><strong>@"
-		+ user + "</strong></span></li>";
+	    userList += "<li><a href='" + window.location + "' class='"
+		+ userClass + "' style='"
+		+ makeUserColor(user) + "'><strong id='@" + user + "'>@"
+		+ user + "</strong></a></li>";
 	}
     }
     userList += "</ul>";
     if (userList != lastUserList) {
 	$("#user-list").html(userList);
+	$(".activeUser").on("click", insertUserIntoText);
+	$(".idleUser").on("click", insertUserIntoText);
 	lastUserList = userList;
     }
 }
@@ -280,7 +303,7 @@ function postMessage(messageString) {
     var endpoint = "https://alpha-api.app.net/stream/0/posts";
     endpoint += "?include_annotations=1";
     jsonPost(endpoint, post, function(data) {
-	addPosts(updatePost(data), false);
+	addPostsToFeed(calculatePost(data), false);
     });
 
     $("#main_post").val("");
@@ -319,9 +342,9 @@ function jsonPost(endpoint, data, success) {
 // Utility functions
 //-----------------------------------------------------------------------------
 
-function addPosts(posts, addBefore)
+function addPostsToFeed(posts, addBefore)
 {
-    if (posts != "") {
+    if (posts != null) {
 	var chatArea = document.getElementById("global-tab-container");
 	var oldHeight = chatArea.scrollHeight;
 	var oldClient = chatArea.clientHeight;
@@ -331,6 +354,8 @@ function addPosts(posts, addBefore)
 	    $(".easydate").easydate();
 	    chatArea.scrollTop = oldTop + chatArea.scrollHeight - oldHeight;
 	} else {
+	    $(".mention", posts).on("click", insertUserIntoText);
+	    $(".author", posts).on("click", insertUserIntoText);
 	    $("#global-tab-container").append(posts);
 	    $(".easydate").easydate();
 	    var oldBottom = Math.max(oldHeight, oldClient) - oldClient;
@@ -339,34 +364,13 @@ function addPosts(posts, addBefore)
 					      chatArea.clientHeight)
 		    - chatArea.clientHeight;
 	    }
-	    $.titleAlert("New Message", { duration: 10000,
-					  interval: 1000,
-					  requireBlur: true});
+	    if (oldHeight != chatArea.scrollHeight) {
+		$.titleAlert("New Message", { duration: 10000,
+					      interval: 1000,
+					      requireBlur: true});
+	    }
 	}
     }
-}
-
-function scrollDown(shouldScroll, lastBottom) {
-    if (shouldScroll) {
-	var chatArea = document.getElementById("global-tab-container");
-	if (chatArea.scrollTop == lastBottom) {
-	    chatArea.scrollTop = getBottomScroll();
-	}
-	$.titleAlert("New Message", { duration: 10000,
-				      interval: 1000,
-				      requireBlur: true});
-    }
-}
-
-function getBottomScroll() {
-    var chatArea = document.getElementById("global-tab-container");
-    var scroll = chatArea.scrollHeight;
-    var client = chatArea.clientHeight;
-    return Math.max(scroll, client) - client;
-}
-
-function logResult(data) {
-//    console.dir(JSON.stringify(data));
 }
 
 function htmlEncode(value){
@@ -404,6 +408,18 @@ function setHeader(xhr) {
     xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
 }
 
+function insertUserIntoText(event) {
+    var user = event.target.id;
+    var textBox = $("#main_post");
+    var cursor = textBox.caret().start;
+    var text = textBox.val();
+    var before = text.substring(0, cursor);
+    var after = text.substring(cursor);
+    textBox.focus();
+    textBox.val(before + user + after);
+    textBox.caret(cursor + user.length, cursor + user.length);
+}
+
 function refreshPage() {
     var redirect = "http://patter-app.net/chat";
     if (chatRoom != null) {
@@ -416,7 +432,7 @@ function refreshPage() {
 function makeUserColor(user) {
     var hash = getHash(user);
     var color = (hash & 0x007f7f7f).toString(16);
-    return "style='color: #" + color + "'";
+    return "color: #" + color + ";";
 }
 
 function getHash(str) {
@@ -431,4 +447,6 @@ function getHash(str) {
     return hash;
 };
 
-var urlRegex = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/i;
+var mentionRegex = /(@[a-zA-Z0-9\-_]+)\b/g;
+
+var urlRegex = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/g;
