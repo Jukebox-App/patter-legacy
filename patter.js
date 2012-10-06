@@ -15,8 +15,13 @@ var chatRoom;
 var rooomName = "Chat Room";
 var userLiveTimes = {};
 var userPostTimes = {};
-var minId = 0;
+var earliestId = 2000000000;
+var latestId = 0;
 var lastUserList = "";
+
+//-----------------------------------------------------------------------------
+// Initialization functions
+//-----------------------------------------------------------------------------
 
 function initialize() {
     var hashParams = getHashParams();
@@ -62,8 +67,8 @@ function getUserInfo(uid) {
 	dataType: "json"
     }).done(function(data) {
 	if (data.id.length > 0 && data.name.length > 0) {
-	    console.log("Current user:");
-	    console.dir(data);
+//	    console.log("Current user:");
+//	    console.dir(data);
 	    currentUser = data;
 	    userId = data.id;
 	    $("#user_avatar").attr("src", currentUser.avatar_image.url);
@@ -120,10 +125,20 @@ function initName() {
     });
 }
 
+//-----------------------------------------------------------------------------
+// Update Functions
+//-----------------------------------------------------------------------------
+
 function updateGlobalFeed() {
+    var chatArea = $("#global-tab-container")[0];
     clearTimeout(globalFeedTimer);
 
-    var lastBottom = getBottomScroll();
+    var goBack = false;
+    if (chatArea.scrollTop <= chatArea.scrollHeight/2
+	&& $("#global-tab-container").children().length > 0
+	&& earliestId > chatRoom) {
+	goBack = true;
+    }
 
     endpoint = "https://alpha-api.app.net/stream/0/posts/" + chatRoom
 	+ "/replies";
@@ -135,28 +150,34 @@ function updateGlobalFeed() {
     params.count = 200;
 
     if ($("#global-tab-container").children().length > 0) {
-	params.since_id = minId;
+	if (goBack) {
+	    params.before_id = earliestId;
+	} else {
+	    params.since_id = latestId;
+	}
     }
 
     $.get(endpoint, params, function(data) {
-	var added = false;
-	if (data.length > 0) {
-	    for (var i = data.length - 1; i > -1; i--) {
-		added = updatePost(data[i]) || added;
+	var allPosts = "";
+	for (var i = data.length - 1; i > -1; i--) {
+	    var newPost = updatePost(data[i], goBack);
+	    if (newPost != null) {
+		allPosts += newPost;
 	    }
 	}
-	scrollDown(added, lastBottom);
+	addPosts(allPosts, goBack);
 	$(".easydate").easydate();
     });
     updateUsers();
     globalFeedTimer = setTimeout("updateGlobalFeed()", 2000);
 }
 
-function updatePost(data) {
-    var added = false;
+function updatePost(data, goBack) {
+    var result = null;
     if (!document.getElementById("post|" + data.id)) {
 	var created = new Date(data.created_at).getTime();
-	minId = data.id;
+	latestId = Math.max(data.id, latestId);
+	earliestId = Math.min(data.id, earliestId);
 	var annotations = data.annotations;
 	var htmlText = null;
 	if (annotations != null) {
@@ -181,21 +202,17 @@ function updatePost(data) {
 	if (htmlText != null) {
 	    var body = htmlText.replace(urlRegex,
 					"<a href='$1' target='_blank'>$1</a>");
-	    var formattedPost =
-		"<div class='row-fluid'><div class='span10'>" +
+	    result =
+		"<div class='row-fluid' id='post|" + data.id +
+		"'><div class='span10'>" +
 		"<span class='appNetPostUsername' "
 		+ makeUserColor(data.user.username) + "><strong>@" + 
 		data.user.username + "</strong></span> " + body
 		+ "</div><div class='span2'><span class='easydate'>" +
 		htmlEncode(data.created_at) + "</span></div></div>";
-	    $('<div></div>', {
-		id: 'post|' + data.id,
-		html: formattedPost
-	    }).appendTo($("#global-tab-container"));
-	    added = true;
 	}
     }
-    return added;
+    return result;
 }
 
 function updateUsers() {
@@ -229,41 +246,9 @@ function updateUsers() {
     }
 }
 
-function postMessage(messageString) {
-    var lastBottom = getBottomScroll();
-    var post = {
-	machine_only: true,
-	reply_to: chatRoom,
-	annotations: [{type: "snark.chat", value: {message: messageString}}]
-    };
-    var endpoint = "https://alpha-api.app.net/stream/0/posts";
-    endpoint += "?include_annotations=1";
-    jsonPost(endpoint, post, function(data) {
-	scrollDown(updatePost(data), lastBottom);
-	$(".easydate").easydate();
-    });
-
-    $("#main_post").val("");
-}
-
-function scrollDown(shouldScroll, lastBottom) {
-    if (shouldScroll) {
-	var chatArea = document.getElementById("global-tab-container");
-	if (chatArea.scrollTop == lastBottom) {
-	    chatArea.scrollTop = getBottomScroll();
-	}
-	$.titleAlert("New Message", { duration: 10000,
-				      interval: 1000,
-				      requireBlur: true});
-    }
-}
-
-function getBottomScroll() {
-    var chatArea = document.getElementById("global-tab-container");
-    var scroll = chatArea.scrollHeight;
-    var client = chatArea.clientHeight;
-    return Math.max(scroll, client) - client;
-}
+//-----------------------------------------------------------------------------
+// Post Functions
+//-----------------------------------------------------------------------------
 
 function createRoom(name) {
     var post = {
@@ -275,6 +260,22 @@ function createRoom(name) {
 	chatRoom = data.thread_id;
 	refreshPage();
     });
+}
+
+function postMessage(messageString) {
+    var post = {
+	machine_only: true,
+	reply_to: chatRoom,
+	annotations: [{type: "snark.chat", value: {message: messageString}}]
+    };
+    var endpoint = "https://alpha-api.app.net/stream/0/posts";
+    endpoint += "?include_annotations=1";
+    jsonPost(endpoint, post, function(data) {
+	addPosts(updatePost(data), false);
+	$(".easydate").easydate();
+    });
+
+    $("#main_post").val("");
 }
 
 function keepalive() {
@@ -304,6 +305,54 @@ function jsonPost(endpoint, data, success) {
 	console.dir(req);
 	console.dir(req.getAllResponseHeaders());
     });
+}
+
+//-----------------------------------------------------------------------------
+// Utility functions
+//-----------------------------------------------------------------------------
+
+function addPosts(posts, addBefore)
+{
+    if (posts != "") {
+	var chatArea = document.getElementById("global-tab-container");
+	var oldHeight = chatArea.scrollHeight;
+	var oldClient = chatArea.clientHeight;
+	var oldTop = chatArea.scrollTop;
+	if (addBefore) {
+	    $("#global-tab-container").prepend(posts);
+	    chatArea.scrollTop = oldTop + chatArea.scrollHeight - oldHeight;
+	} else {
+	    $("#global-tab-container").append(posts);
+	    var oldBottom = Math.max(oldHeight, oldClient) - oldClient;
+	    if (oldTop == oldBottom) {
+		chatArea.scrollTop = Math.max(chatArea.scrollHeight,
+					      chatArea.clientHeight)
+		    - chatArea.clientHeight;
+	    }
+	    $.titleAlert("New Message", { duration: 10000,
+					  interval: 1000,
+					  requireBlur: true});
+	}
+    }
+}
+
+function scrollDown(shouldScroll, lastBottom) {
+    if (shouldScroll) {
+	var chatArea = document.getElementById("global-tab-container");
+	if (chatArea.scrollTop == lastBottom) {
+	    chatArea.scrollTop = getBottomScroll();
+	}
+	$.titleAlert("New Message", { duration: 10000,
+				      interval: 1000,
+				      requireBlur: true});
+    }
+}
+
+function getBottomScroll() {
+    var chatArea = document.getElementById("global-tab-container");
+    var scroll = chatArea.scrollHeight;
+    var client = chatArea.clientHeight;
+    return Math.max(scroll, client) - client;
 }
 
 function logResult(data) {
