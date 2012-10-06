@@ -133,8 +133,9 @@ function updateGlobalFeed() {
     var chatArea = $("#global-tab-container")[0];
     clearTimeout(globalFeedTimer);
 
+    // Should the feed load older messages or newer ones.
     var goBack = false;
-    if (chatArea.scrollTop <= chatArea.scrollHeight/2
+    if (chatArea.scrollTop <= chatArea.scrollHeight/3
 	&& $("#global-tab-container").children().length > 0
 	&& earliestId > chatRoom) {
 	goBack = true;
@@ -166,7 +167,6 @@ function updateGlobalFeed() {
 	    }
 	}
 	addPosts(allPosts, goBack);
-	$(".easydate").easydate();
     });
     updateUsers();
     globalFeedTimer = setTimeout("updateGlobalFeed()", 2000);
@@ -272,7 +272,6 @@ function postMessage(messageString) {
     endpoint += "?include_annotations=1";
     jsonPost(endpoint, post, function(data) {
 	addPosts(updatePost(data), false);
-	$(".easydate").easydate();
     });
 
     $("#main_post").val("");
@@ -320,9 +319,11 @@ function addPosts(posts, addBefore)
 	var oldTop = chatArea.scrollTop;
 	if (addBefore) {
 	    $("#global-tab-container").prepend(posts);
+	    $(".easydate").easydate();
 	    chatArea.scrollTop = oldTop + chatArea.scrollHeight - oldHeight;
 	} else {
 	    $("#global-tab-container").append(posts);
+	    $(".easydate").easydate();
 	    var oldBottom = Math.max(oldHeight, oldClient) - oldClient;
 	    if (oldTop == oldBottom) {
 		chatArea.scrollTop = Math.max(chatArea.scrollHeight,
