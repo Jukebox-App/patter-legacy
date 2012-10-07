@@ -47,12 +47,18 @@ function initialize() {
     $("#main").hide();
     $("#main-logged").hide();
     $("#main-join").hide();
+    $(".theme").hide();
 
     if (accessToken != null) {
         // have access - get user info
         getUserInfo('me');
     } else {
 	$("#main").show();
+    }
+
+    var theme = $.cookie("patterTheme");
+    if (theme != null) {
+	setTheme(theme);
     }
 }
 
@@ -73,6 +79,11 @@ function getUserInfo(uid) {
 	    $("#user_avatar").attr("src", currentUser.avatar_image.url);
 	    $("#user_name").html(currentUser.name);
 	    $("#user_username").html("@" + currentUser.username);
+	    $("#theme_select").change(function() {
+		$("select option:selected").each(function () {
+                    setTheme($(this).attr('value'));
+		});
+	    });
 	    $("#form_post").on("submit", function(event) {
 		if ($("#main_post").val().length > 0) {
 		    postMessage($("#main_post").val());
@@ -84,6 +95,7 @@ function getUserInfo(uid) {
 	    });
 	    if (chatRoom != null) {
 		$("#main-logged").show("slow");
+		$(".theme").show();
 		initName();
 		updateGlobalFeed();
 		keepalive();
@@ -102,6 +114,7 @@ function getUserInfo(uid) {
 }
 
 function initName() {
+    $(".viewArchive").attr('href', 'http://appnetizens.com/threadchat?chatid=' + chatRoom);
     endpoint = "https://alpha-api.app.net/stream/0/posts/" + chatRoom;
     endpoint += "?include_annotations=1&include_machine=1";
     $.ajax({
@@ -116,7 +129,7 @@ function initName() {
 	    for (; j < annotations.length; ++j) {
 		if (annotations[j].type == "snark.room") {
 		    roomName = annotations[j].value.name;
-		    var htmlText = htmlEncode(roomName)
+		    var htmlText = htmlEncode(roomName + ' - (Public Room)')
 		    $("#room-name").html(htmlText);
 		}
 	    }
@@ -176,27 +189,40 @@ function calculatePost(data) {
     storePostInfo(data);
     var body = calculateBody(data);
     if (body != null) {
+	var userMention = new RegExp("'@" + currentUser.username + "'");
+	var postClass = 'postRow';
+	var timeClass = 'postTimestamp';
+	if (data.user.username == currentUser.username) {
+	    postClass = 'myPostRow';
+	    timeClass = 'myPostTimestamp';
+	} else if (userMention.test(body)) {
+	    postClass = 'postMentionRow';
+	    timeClass = 'postMentionTimestamp';
+	}
 	var row = jQuery('<div/>');
-	row.addClass('row-fluid');
+	row.addClass('postRowWrap');
 	row.attr('id', 'post|' + data.id);
 	
 	var post = jQuery('<div/>');
-	post.addClass('span10');
+	post.addClass(postClass);
 
 	var author = jQuery('<a/>');
 	author.addClass('author');
 	author.attr('href', window.location);
 	author.attr('id', '@' + data.user.username);
 	author.attr('style', makeUserColor(data.user.username));
-	author.html('<strong id="@' + data.user.username + '">@' + data.user.username + '</strong> ');
+//	author.html('<strong id="@' + data.user.username + '">@' + data.user.username + '</strong> ');
+	author.text('@' + data.user.username);
 	post.append(author);
+	post.append(' ');
 	post.append(body);
 	row.append(post);
 
-	var timestamp = jQuery('<div/>');
-	timestamp.addClass('span2');
-	timestamp.addClass('easydate');
-	timestamp.text(data.created_at);
+	var timestamp = jQuery('<span/>');
+	timestamp.addClass(timeClass);
+	timestamp.attr('id', 'easydate');
+	timestamp.attr('title', data.created_at);
+//	timestamp.text("3:34pm");
 	row.append(timestamp);
 	result = row;
     }
@@ -247,7 +273,8 @@ function calculateBody(data)
 }
 
 function updateUsers() {
-    var userList = '<ul class="unstyled">';
+    var userList = '<h4>User List</h4>' +
+	'<ul class="usersList">';
     var goneTime = new Date().getTime() - 1000*60*goneTimeout;
     var idleTime = new Date().getTime() - 1000*60*idleTimeout;
     var keys = Object.keys(userPostTimes);
@@ -260,7 +287,9 @@ function updateUsers() {
 	{
 	    var user = htmlEncode(keys[i]);
 	    var userClass = "idleUser";
-	    if (postTime != null && postTime >= idleTime) {
+	    if (keys[i] == currentUser.username) {
+		userClass = "myAccount";
+	    } else if (postTime != null && postTime >= idleTime) {
 		userClass = "activeUser";
 	    }
 	    userList += "<li><a href='" + window.location + "' class='"
@@ -349,15 +378,38 @@ function addPostsToFeed(posts, addBefore)
 	var oldHeight = chatArea.scrollHeight;
 	var oldClient = chatArea.clientHeight;
 	var oldTop = chatArea.scrollTop;
+	$("#easydate", posts).easydate({
+	locale: { 
+	    "future_format": "%s %t", 
+	    "past_format": "%t %s", 
+	    "second": "s", 
+	    "seconds": "s", 
+	    "minute": "m", 
+	    "minutes": "m", 
+	    "hour": "h", 
+	    "hours": "h", 
+	    "day": "day", 
+	    "days": "days", 
+	    "week": "week", 
+	    "weeks": "weeks", 
+	    "month": "month", 
+	    "months": "months", 
+	    "year": "year", 
+	    "years": "years", 
+	    "yesterday": "yesterday", 
+	    "tomorrow": "tomorrow", 
+	    "now": "now", 
+	    "ago": " ", 
+	    "in": "in" }});
 	if (addBefore) {
 	    $("#global-tab-container").prepend(posts);
-	    $(".easydate").easydate();
+//	    formatTimestamps();
 	    chatArea.scrollTop = oldTop + chatArea.scrollHeight - oldHeight;
 	} else {
 	    $(".mention", posts).on("click", insertUserIntoText);
 	    $(".author", posts).on("click", insertUserIntoText);
 	    $("#global-tab-container").append(posts);
-	    $(".easydate").easydate();
+//	    formatTimestamps();
 	    var oldBottom = Math.max(oldHeight, oldClient) - oldClient;
 	    if (oldTop == oldBottom) {
 		chatArea.scrollTop = Math.max(chatArea.scrollHeight,
@@ -429,6 +481,47 @@ function refreshPage() {
     window.location.reload(true);
 }
 
+function formatTimestamps() {
+/*
+    $(".easydate").easydate({
+	locale: { 
+	    "future_format": "%s %t", 
+	    "past_format": "%t %s", 
+	    "second": "s", 
+	    "seconds": "s", 
+	    "minute": "m", 
+	    "minutes": "m", 
+	    "hour": "h", 
+	    "hours": "h", 
+	    "day": "day", 
+	    "days": "days", 
+	    "week": "week", 
+	    "weeks": "weeks", 
+	    "month": "month", 
+	    "months": "months", 
+	    "year": "year", 
+	    "years": "years", 
+	    "yesterday": "yesterday", 
+	    "tomorrow": "tomorrow", 
+	    "now": "now", 
+	    "ago": " ", 
+	    "in": "in" 
+	}});
+*/
+/*
+	units: [ 
+	    { name: "now", limit: 5 }, 
+	    { name: "s", limit: 60, in_seconds: 1 }, 
+	    { name: "m", limit: 3600, in_seconds: 60 }, 
+	    { name: "h", limit: 86400, in_seconds: 3600  }, 
+	    { name: "day", limit: 172800, in_seconds: 86400 }, 
+	    { name: "week", limit: 2629743, in_seconds: 604800  }, 
+	    { name: "month", limit: 31556926, in_seconds: 2629743 }, 
+	    { name: "year", limit: Infinity, in_seconds: 31556926 } 
+	]});
+*/
+}
+
 function makeUserColor(user) {
     var hash = getHash(user);
     var color = (hash & 0x007f7f7f).toString(16);
@@ -446,6 +539,20 @@ function getHash(str) {
     }
     return hash;
 };
+
+function setTheme(theme) {
+    $("link").each(function(index, element) {
+	if (element.getAttribute("rel").indexOf("style") != -1
+	    && element.getAttribute("title")) {
+	    element.disabled = true;
+	    if (element.title == theme) {
+		element.disabled = false;
+	    }
+	}
+    });
+    $.cookie("patterTheme", theme, {expires: 30, path: "/"});
+    $("#theme_select").val(theme);
+}
 
 var mentionRegex = /(@[a-zA-Z0-9\-_]+)\b/g;
 

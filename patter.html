@@ -3,18 +3,24 @@
 <head>
         <meta charset="utf-8">
         <title>Patter - A chat client for app.net</title>
+<!--
     <link rel="stylesheet" style="text/css"
           href="http://www.jonathonduerig.com/test/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" style="text/css"
           href="http://www.jonathonduerig.com/test/bootstrap/css/bootstrap-responsive.min.css">
+-->
     <link rel="stylesheet" style="text/css"
-          href="patter.css">
+          href="patter-sms.css" title="sms">
+    <link rel="alternate stylesheet" style="text/css"
+          href="patter-irc.css" title="irc">
     <script src="http://www.jonathonduerig.com/test/jquery-1.8.2.min.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.caret.min.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.cookie.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.easydate-0.2.4.min.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.titlealert.min.js"></script>
+<!--
     <script src="http://www.jonathonduerig.com/test/bootstrap/js/bootstrap.min.js"></script>
+-->
     <script src="patter.js"></script>
     <script>
         $(document).ready(initialize);
@@ -28,39 +34,42 @@
       <p>This is a client for creating and participating in open chat
         rooms over <a href=http://app.net target="_blank">app.net</a>.
       <p><a id="authorize-button" class="btn btn-primary btn-large" href="https://alpha.app.net/oauth/authenticate?client_id=eyvKG7AakjJTGk9cLJj7MsXX2GWPEwLQ&response_type=token&redirect_uri=http://patter-app.net/chat&scope=stream%20write_post">Authorize Patter</a> to begin.</p>
-      <p>For troubleshooting, contact @duerig. Based (loosely) on code from @q.</p>
+      <p>For troubleshooting, contact @duerig. Themes by @shawnking.</p>
     </div>
-    <div id="main-logged" class="hero-unit">
-      <div class="row-fluid">
-        <div class="span4">
-          <h3 id="room-name">Chat Room</h3>
+    <div class="siteTitle">
+      <a href="http://patter-app.net" class="patterLogo"></a>
+    </div>
+
+    <div id="main-logged" class="chatClientWrap">
+      <div class="rowFull">
+        <div class="column8 chatTitle">
+          <h3 id="room-name">Chat Room - (Public Room)</h3>
         </div>
-        <div class="span6">
-          <h4>(Public Room)</h4>
+        <div class="column2">
+          <a class="viewArchive" href="http://appnetizens.com/threadchat" target="_blank">View Archive</a>
         </div>
-        <div class="span2">
-          <p><a class="btn btn-primary btn-large" href="http://patter-app.net/chat">Leave Room</a></p>
+        <div class="column2">
+          <a class="leaveRoom" href="http://patter-app.net/chat">Leave Room</a>
         </div>
       </div>
-      <br clear="both">
-      <div class="row-fluid">
-        <div id="global-tab-container" class="span10"
-             style="max-height: 600px; overflow: scroll;">
+      <div class="rowFull shadow">
+        <div id="global-tab-container" class="column9 postWindow">
         </div>
-        <div class="span2">
+        <div class="column3 userWindow">
           <div id="user-list">
-            <p>User List</p>
+            <h4>User List</h4>
           </div>
         </div>
       </div>
-      <br clear="both">
-      <div class="row-fluid">
+      <div class="rowFull">
         <form id="form_post">
-          <div class="span11">
-            <input type="text" id="main_post" class="chatbox" maxlength="256">
+          <div class="column10">
+            <div class="chatBoxWrap">
+              <input type="text" id="main_post" class="chatbox" maxlength="256">
+            </div>
           </div>
-          <div class="span1">
-            <input type="submit" value="Send" />
+          <div class="column2">
+            <input type="submit" value="Send" class="submitMessage" />
           </div>
         </form>
       </div>
@@ -79,8 +88,14 @@
         <textarea id="create_name"></textarea><br clear="both">
         <button id="create_button">Create Chat Room</button>
       </div>
-      <p>For troubleshooting, contact @duerig. Based (loosely) on code from @q.</p>
+      <p>For troubleshooting, contact @duerig. Themes by @shawnking.</p>
     </div>
+  </div>
+  <div class="theme">
+    <select id="theme_select">
+      <option value="sms">SMS Style</option>
+      <option value="irc">Chat Style</option>
+    </select>
   </div>
 </body>
 </html>
