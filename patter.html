@@ -13,6 +13,8 @@
           href="patter-sms.css" title="sms">
     <link rel="alternate stylesheet" style="text/css"
           href="patter-irc.css" title="irc">
+    <link rel="alternate stylesheet" style="text/css"
+          href="patter-mndp.css" title="mndp">
     <script src="http://www.jonathonduerig.com/test/jquery-1.8.2.min.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.caret.min.js"></script>
     <script src="http://www.jonathonduerig.com/test/jquery.cookie.js"></script>
@@ -46,6 +48,7 @@
           <h3 id="room-name">Chat Room - (Public Room)</h3>
         </div>
         <div class="column2">
+          <a class="videoFeed" href="http://justin.tv/hellcativ" target="_blank">Video Feed</a>
           <a class="viewArchive" href="http://appnetizens.com/threadchat" target="_blank">View Archive</a>
         </div>
         <div class="column2">
@@ -69,9 +72,20 @@
             </div>
           </div>
           <div class="column2">
-            <input type="submit" value="Send" class="submitMessage" />
+            <input type="submit" value="Send" class="submitMessage"/>
           </div>
         </form>
+      </div>
+      <br clear="both">
+      <div class="rowFull">
+        <div class="hashContainer">
+          <a href="" class="hashLink">#MondayNightDanceParty</a>
+        </div>
+        <div class="broadcastContainer">
+          <form id="form_broadcast">
+            <input type="submit" value="Broadcast" class="broadcastMessage"/>
+          </form>
+        </div>
       </div>
     </div>
     <div id="main-join" class="hero-unit" style="height: 100%;">
@@ -95,6 +109,7 @@
     <select id="theme_select">
       <option value="sms">SMS Style</option>
       <option value="irc">Chat Style</option>
+      <option value="mndp">MNDP Style</option>
     </select>
   </div>
 </body>
