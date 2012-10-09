@@ -9,13 +9,11 @@
     <link rel="stylesheet" style="text/css"
           href="http://www.jonathonduerig.com/test/bootstrap/css/bootstrap-responsive.min.css">
 -->
-<!--
     <link rel="stylesheet" style="text/css"
           href="http://partleecloudy.com/Resources/Patter/patter-sms.css" title="sms">
--->
 
-    <link rel="stylesheet" style="text/css"
-          href="patter-sms.css" title="sms">
+    <!--<link rel="stylesheet" style="text/css"
+          href="patter-sms.css" title="sms">-->
 
     <link rel="alternate stylesheet" style="text/css"
           href="patter-irc.css" title="irc">
@@ -47,8 +45,8 @@
     <div class="siteTitle">
       <a href="http://patter-app.net" class="patterLogo"></a>
     </div>
-
-    <div id="main-logged" class="chatClientWrap">
+    <!-- main-logged -->
+    <div id="main" class="chatClientWrap">
       <div class="rowFull">
         <div class="column8 chatTitle">
           <h3 id="room-name">Chat Room - (Public Room)</h3>
@@ -72,25 +70,25 @@
       </div>
       <div class="rowFull">
         <form id="form_post">
-          <div class="column10">
+          <div class="column9 noPadding">
             <div class="chatBoxWrap">
               <input type="text" id="main_post" class="chatbox" maxlength="256">
             </div>
           </div>
-          <div class="column2">
+          <div class="columnSubmit">
             <input type="submit" value="Send" class="submitMessage"/>
+          </div>
+          <div class="columnBroadcast">
+              <form id="form1">
+                <input type="submit" value="Broadcast" class="broadcastMessage" />
+              </form>
           </div>
         </form>
       </div>
-      <br clear="both">
+
       <div class="rowFull">
         <div class="hashContainer">
           <a href="" class="hashLink">#MondayNightDanceParty</a>
-        </div>
-        <div class="broadcastContainer">
-          <form id="form_broadcast">
-            <input type="submit" value="Broadcast" class="broadcastMessage"/>
-          </form>
         </div>
       </div>
     </div>
