@@ -14,6 +14,7 @@ var accessToken;
 var chatRoom;
 var rooomName = "Chat Room";
 var userPostTimes = {};
+var avatarUrls = {};
 var earliestId = 2000000000;
 var latestId = 0;
 var lastUserList = "";
@@ -250,6 +251,7 @@ function storePostInfo(data) {
     if (userPostTimes[data.user.username] == null
 	|| userPostTimes[data.user.username] < created) {
         userPostTimes[data.user.username] = created;
+	avatarUrls[data.user.username] = data.user.avatar_image.url;
     }
 }
 
@@ -312,7 +314,7 @@ function updateUsers() {
             } else if (postTime != null && postTime >= idleTime) {
                 userClass = "activeUser";
             }
-            userList += "<li><a href='#' class='userAvatar'><img src='http://partleecloudy.com/Resources/Patter/Resources/Images/Avatar.png' /></a><a id='@" + user + "' href='" + window.location + "' class='"
+            userList += "<li><a href='http://alpha.app.net/" + user + "' target='_blank' class='userAvatar'><img class='userAvatarImg' width='33' height='33' src='" + avatarUrls[keys[i]] + "' /></a><a id='@" + user + "' href='" + window.location + "' class='"
             + userClass + "' style='"
             + makeUserColor('@' + user) + "'>@"
             + user + "</a></li>";
@@ -324,6 +326,7 @@ function updateUsers() {
         $(".myAccount").on("click", insertUserIntoText);
         $(".activeUser").on("click", insertUserIntoText);
         $(".idleUser").on("click", insertUserIntoText);
+	$(".userAvatarImg").imagefit();
         lastUserList = userList;
     }
 }

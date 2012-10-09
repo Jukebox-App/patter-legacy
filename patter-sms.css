@@ -91,8 +91,8 @@ input.chatbox { position: absolute; top: 2px; right: 2px; bottom: 1px; left: 2px
 
 .broadcastContainer { float: left; margin: 0 0 0 40px; }
 
-.videoFeed { display: none; }
-.hashContainer { display: none; }
 .theme select { border: none; border-radius: 3px; padding: 3px; }
 .theme select:focus { outline: none; }
 
+.videoFeed { display: none; }
+.hashContainer { display: none; }
