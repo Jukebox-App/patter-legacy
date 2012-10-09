@@ -86,12 +86,13 @@ function getUserInfo(uid) {
             });
             $("#form_post").on("submit", function (event) {
                 if ($("#main_post").val().length > 0) {
-                    postMessage($("#main_post").val());
+                    postMessage($("#main_post").val(), null, null);
                 }
                 return false;
             });
             $("#form_broadcast").on("submit", function (event) {
                 if ($("#main_post").val().length > 0) {
+		    console.log("broadcasting");
                     broadcastMessage($("#main_post").val());
                 }
                 return false;
@@ -221,7 +222,6 @@ function calculatePost(data) {
         author.attr('href', window.location);
         author.attr('id', '@' + data.user.username);
         author.attr('style', makeUserColor('@' + data.user.username));
-        //	author.html('<strong id="@' + data.user.username + '">@' + data.user.username + '</strong> ');
         author.text('@' + data.user.username);
         post.append(author);
         post.append(' ');
@@ -232,9 +232,9 @@ function calculatePost(data) {
         timestamp.addClass(timeClass);
         timestamp.attr('id', 'easydate');
         timestamp.attr('title', data.created_at);
-        //	timestamp.text("3:34pm");
         row.append(timestamp);
 
+	$(".broadcastLink", row).insertBefore($(".author", row));
         $(".mention", row).each(function (index, element) {
             element.setAttribute('style', makeUserColor(element.id));
         });
@@ -258,6 +258,7 @@ function calculateBody(data) {
     if (data.text != null) {
         result = htmlEncode(data.text);
     }
+    var broadcastUrl = null;
     var annotations = data.annotations;
     if (!document.getElementById("post|" + data.id) && annotations != null
 	&& result == null) {
@@ -271,6 +272,8 @@ function calculateBody(data) {
                 result = "<em>Room <strong>"
                     + htmlEncode(text)
                     + "</strong> created</em>";
+            } else if (annotations[i].type == "snark.broadcast") {
+		broadcastUrl = annotations[i].value.url;
             }
         }
     }
@@ -283,6 +286,9 @@ function calculateBody(data) {
                    "<a href='" + window.location +
                    "' id='$1' class='mention' " +
                    ">$1</a>");
+	if (broadcastUrl != null) {
+            result = result + ' <a class="broadcastLink" href="' + broadcastUrl + '"><span class="broadcastIcon"></a>';
+	}
     }
     return result;
 }
@@ -338,11 +344,17 @@ function createRoom(name) {
     });
 }
 
-function postMessage(messageString) {
+function postMessage(messageString, broadcastId, broadcastUrl) {
+    var annotations = [{type: "snark.chat", value: {message: messageString}}];
+    if (broadcastId != null && broadcastUrl != null) {
+	annotations.push({type: "snark.broadcast",
+                          value: {id: broadcastId,
+                                  url: broadcastUrl}});
+    }
     var post = {
         machine_only: true,
         reply_to: chatRoom,
-        annotations: [{ type: "snark.chat", value: { message: messageString } }]
+	annotations: annotations
     };
     var endpoint = "https://alpha-api.app.net/stream/0/posts";
     endpoint += "?include_annotations=1";
@@ -360,10 +372,8 @@ function broadcastMessage(messageString) {
     var endpoint = "https://alpha-api.app.net/stream/0/posts";
     endpoint += "?include_annotations=1";
     jsonPost(endpoint, post, function (data) {
-        //	addPostsToFeed(calculatePost(data), false);
+	postMessage(messageString, data.id, data.canonical_url);
     });
-    postMessage(messageString);
-    $("#main_post").val("");
 }
 
 function keepalive() {
