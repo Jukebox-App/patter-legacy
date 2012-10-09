@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1111.3383"
+   height="1168.5715"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="broadcast.svg">
+  <metadata
+     id="metadata21">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs19">
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask3938">
+      <g
+         transform="matrix(0,1,-1,0,1200.3199,1112.7179)"
+         id="g3940">
+        <path
+           style="fill:#ffffff;stroke-width:80;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4"
+           inkscape:connector-curvature="0"
+           d="m 43.814912,1156.512 7.343821,-11.1893 -14.715408,0 7.371587,11.1893 z"
+           stroke-miterlimit="4"
+           id="path3942" />
+        <path
+           style="fill:#ffffff;stroke-width:80;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4"
+           inkscape:connector-curvature="0"
+           d="m 43.814912,1156.5258 7.343821,11.1893 -14.715408,0 7.371587,-11.1893 z"
+           stroke-miterlimit="4"
+           id="path3944" />
+      </g>
+    </mask>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="843"
+     inkscape:window-height="480"
+     id="namedview17"
+     showgrid="false"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="41.282321"
+     inkscape:cy="15.344214"
+     inkscape:window-x="640"
+     inkscape:window-y="131"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Back"
+     style="display:inline">
+    <rect
+       style="fill:#ffffff;fill-opacity:0"
+       id="rect3946"
+       width="26.823387"
+       height="21.213203"
+       x="32.70369"
+       y="1145.9442"
+       inkscape:export-filename="broadcast.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Front"
+     sodipodi:insensitive="true">
+    <g
+       id="g3933"
+       mask="url(#mask3938)"
+       transform="matrix(1.2500005,0,0,1.2500005,-8.4502754,-291.61554)"
+       style="stroke:#008000;stroke-width:0.99999958;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none">
+      <path
+         id="svg_3"
+         stroke-miterlimit="4"
+         d="m 53.606671,1156.4564 a 9.8056416,9.8056416 0 1 1 -19.611282,0 9.8056416,9.8056416 0 1 1 19.611282,0 z"
+         inkscape:connector-curvature="0"
+         style="fill:#ffffff;fill-opacity:0;stroke:#008000;stroke-width:0.99999958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         id="svg_4"
+         stroke-miterlimit="4"
+         d="m 50.487273,1156.4564 a 6.6862471,6.6862471 0 1 1 -13.372493,0 6.6862471,6.6862471 0 1 1 13.372493,0 z"
+         inkscape:connector-curvature="0"
+         style="fill:#ffffff;fill-opacity:0;stroke:#008000;stroke-width:0.99999958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         id="svg_5"
+         stroke-miterlimit="4"
+         d="m 47.527781,1156.4564 a 3.7267517,3.7267517 0 0 1 -7.453503,0 3.7267517,3.7267517 0 1 1 7.453503,0 z"
+         inkscape:connector-curvature="0"
+         style="fill:#ffffff;fill-opacity:0;stroke:#008000;stroke-width:0.99999958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Masks" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Tower"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <path
+       style="fill:#008000;fill-opacity:1;stroke:#008000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:connector-curvature="0"
+       d="m 47.160009,1154.0337 c -0.0089,0.3518 -0.21178,0.6443 -0.52473,0.7913 -0.05138,0.021 0.494778,11.0038 0.515567,11.3557 -0.823066,0 -0.842738,0 -1.705764,0 0.01465,-0.3519 0.573076,-11.3385 0.521699,-11.3603 -0.321289,-0.1457 -0.510726,-0.4454 -0.52473,-0.7914 0,-0.4741 0.384825,-0.859 0.858978,-0.859 0.474156,0 0.85898,0.3849 0.85898,0.859 z"
+       stroke-miterlimit="4"
+       id="svg_9" />
+  </g>
+</svg>

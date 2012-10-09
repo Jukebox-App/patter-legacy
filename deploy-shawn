@@ -1,0 +1,3 @@
+#!/bin/sh
+
+scp patter.html patter.js patter-irc.css patter-sms.css patter-mndp.css duerig@jonathonduerig.com:/var/www/patter-app.net/shawn
