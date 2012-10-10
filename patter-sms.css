@@ -48,28 +48,27 @@ input.broadcastMessage:hover { background: #005510; }
 
 .postRow, .myPostRow, .postMentionRow { position: relative; margin-bottom: 5px; padding: 5px; max-width: 85%; font-size: 0.875em; -ms-word-break: break-all; word-break: break-all; word-break: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; }
 .postRow> a, .myPostRow > a, .postMentionRow > a { color: #00457c; text-decoration: none; font-style: italic; display: inline-block; font-size: inherit; }
-.postRow> a.author, .myPostRow > a.author, .postMentionRow > a.author { color: #00457c; text-decoration: none; font-style: italic; font-weight: bold; display: inline-block; font-size: inherit; margin-left: 30px; }
 .postRow > a:hover, .myPostRow .activeUser a:hover, .postMentionRow > a:hover { color: #2a79b8; }
 .postRow > a.userLink, .myPostRow > a.userLink, .postMentionRow > a.userLink { font-weight: bold; }
-.postRow > .broadcastLink { position: absolute; top: 3px; left: 3px; bottom: 0; width: 27px; height: 21px; background-color: #058205; border-radius: 3px; padding: 5px 0 0 3px; }
 .postRow > .mention, .myPostRow > .mention, .postMentionRow > .mention { font-weight: bold; color: #39f; display: inline-block; font-size: inherit; margin-left: 0; }
 .postRow > a:first-child, .myPostRow > a:first-child, .postMentionRow > a:first-child { margin-left: 0px; }
 
 .postRow { background: #f5f5f5; border-bottom: 1px solid #e0e0e0; border-radius: 3px; float: left; clear: both; }
-.postRow .author { color: #39f; }
 .postRow .appNetPost { display: inline-block; margin-left: 5px; }
 
 .postMentionRow { background: #fff7cb; border-bottom: 1px solid #e5d477; border-radius: 3px; float: left; clear: both; }
-.postMentionRow .author { color: #39f; }
 .postMentionRow .appNetPost { display: inline-block; margin-left: 5px; }
-.postMentionRow > .broadcastLink { position: absolute; top: 3px; left: 3px; bottom: 0; width: 27px; height: 21px; background-color: #058205; border-radius: 3px; padding: 3px 0 0 3px; }
 
 .myPostRow { background: #e5f2ff; border-bottom: 1px solid #abcced; border-radius: 3px; float: right; clear: both; }
-.myPostRow .author { color: #036; }
 .myPostRow .appNetPost { display: inline-block; margin-left: 5px; }
-.myPostRow > .broadcastLink { position: absolute; top: 3px; left: 3px; bottom: 0; width: 27px; height: 21px; background-color: #058205; border-radius: 3px; padding: 5px 0 0 3px; }
 
 .broadcastIcon { background: url('Resources/Images/BroadcastImg.png') no-repeat; width: 24px; height: 18px; display: block; }
+.broadcastLink { float: left; margin-left: 3px; margin-right: 6px; bottom: 0; width: 27px; height: 21px; background-color: #058205; border-radius: 3px; padding: 5px 0 0 3px; }
+
+.authorContainer { display: inline-block; }
+a.author:hover { color: #eeeeee; }
+a.author { color: #ffffff; padding: 0px 5px 0px 5px; text-decoration: none; font-style: normal; display: inline-block; font-size: inherit; margin: 0; margin-top: 2px; }
+.authorAvatar { float: left; margin-top: 2px; }
 
 .postTimestamp { font-size: 0.6em; color: #a4a4a4; float: left; padding: 7px 0 0 5px; display: inline-block; }
 .postMentionTimestamp { font-size: 0.6em; color: #a4a4a4; float: left; padding: 7px 0 0 5px; }
@@ -86,7 +85,7 @@ input.broadcastMessage:hover { background: #005510; }
 .activeUser { padding: 5px; width: 180px; border-bottom: 1px solid #d4d4d4; color: #333; font-weight: bold; margin-bottom: 1px; }
 .activeUser:hover { background: #ddd; }
 
-.chatBoxWrap { background: #fff; width: 100%; position: relative; height: 40px; margin-left: 10px; border-radius: 0 0 0 3px; border: 1px solid #ccc; }
+.chatBoxWrap { background: #fff; width: 100%; position: relative; height: 40px; margin-left: 10px; border-radius: 0 0 0 3px; border: 1px; solid #ccc; }
 input.chatbox { position: absolute; top: 2px; right: 2px; bottom: 1px; left: 2px; padding: 5px; border: none; box-shadow: none; }
 
 .broadcastContainer { float: left; margin: 0 0 0 40px; }

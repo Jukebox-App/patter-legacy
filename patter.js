@@ -93,7 +93,6 @@ function getUserInfo(uid) {
             });
             $("#form_broadcast").on("submit", function (event) {
                 if ($("#main_post").val().length > 0) {
-		    console.log("broadcasting");
                     broadcastMessage($("#main_post").val());
                 }
                 return false;
@@ -182,7 +181,13 @@ function updateGlobalFeed() {
         }
     }
 
-    $.get(endpoint, params, function (data) {
+    $.ajax({
+        url: endpoint,
+        type: "GET",
+	data: params,
+        dataType: "json",
+        beforeSend: setHeader
+    }).done(function (data) {
         var allPosts = jQuery('<div/>');
         for (var i = data.length - 1; i > -1; i--) {
             var newPost = calculatePost(data[i]);
@@ -218,13 +223,24 @@ function calculatePost(data) {
         var post = jQuery('<div/>');
         post.addClass(postClass);
 
+	var authorContainer = jQuery('<div/>');
+	authorContainer.addClass('authorContainer');
+/*
+	if (avatarUrls[data.user.username] != null) {
+	    var avatar = "<a href='http://alpha.app.net/" + data.user.username + "' target='_blank' class='authorAvatar'><img class='authorAvatarImg' width='22' height='22' src='" + avatarUrls[data.user.username] + "' /></a>"
+	    authorContainer.append(avatar);
+	}
+*/
         var author = jQuery('<a/>');
         author.addClass('author');
         author.attr('href', window.location);
         author.attr('id', '@' + data.user.username);
-        author.attr('style', makeUserColor('@' + data.user.username));
-        author.text('@' + data.user.username);
-        post.append(author);
+        author.attr('style',
+		    'background: ' + makeUserColor('@' + data.user.username) + ';');
+        author.text(data.user.username);
+	authorContainer.append(author);
+
+        post.append(authorContainer);
         post.append(' ');
         post.append(body);
         row.append(post);
@@ -235,9 +251,10 @@ function calculatePost(data) {
         timestamp.attr('title', data.created_at);
         row.append(timestamp);
 
-	$(".broadcastLink", row).insertBefore($(".author", row));
+	$(".broadcastLink", row).prependTo($(".authorContainer", row));
         $(".mention", row).each(function (index, element) {
-            element.setAttribute('style', makeUserColor(element.id));
+            element.setAttribute('style',
+				 'color: ' + makeUserColor(element.id) + ';');
         });
         result = row;
     }
@@ -291,6 +308,7 @@ function calculateBody(data) {
 	if (broadcastUrl != null) {
             result = result + ' <a class="broadcastLink" href="' + broadcastUrl + '"><span class="broadcastIcon"></a>';
 	}
+//	result = '<div class="postBody">' + result + '</div>';
     }
     return result;
 }
@@ -316,7 +334,7 @@ function updateUsers() {
             }
             userList += "<li><a href='http://alpha.app.net/" + user + "' target='_blank' class='userAvatar'><img class='userAvatarImg' width='33' height='33' src='" + avatarUrls[keys[i]] + "' /></a><a id='@" + user + "' href='" + window.location + "' class='"
             + userClass + "' style='"
-            + makeUserColor('@' + user) + "'>@"
+            + 'color: ' + makeUserColor('@' + user) + ";'>"
             + user + "</a></li>";
         }
     }
@@ -535,7 +553,10 @@ function formatTimestamps() {
 function makeUserColor(user) {
     var hash = getHash(user);
     var color = (hash & 0x007f7f7f).toString(16);
-    return "color: #" + color + ";";
+    while (color.length < 6) {
+	color = '0' + color;
+    }
+    return "#" + color;
 }
 
 function getHash(str) {
